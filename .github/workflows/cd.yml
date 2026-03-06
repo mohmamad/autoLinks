@@ -32,7 +32,7 @@ jobs:
         run: gcloud info
 
       - name: Build and push Docker image
-        run: gcloud builds submit --tag us-central1-docker.pkg.dev/autolinks-12345/autolinks-repo/autolinks-app:latest
+        run: gcloud builds submit --tag us-central1-docker.pkg.dev/autolinks-12345/autolinks-repo/autolinks:latest
 
       - name: Deploy to Cloud Run
-        run: gcloud run deploy autolinks --image us-central1-docker.pkg.dev/autolinks-12345/autolinks-repo/autolinks-app:latest --region us-central1 --allow-unauthenticated --project autolinks-12345 --max-instances=4
+        run: gcloud run deploy autolinks --image us-central1-docker.pkg.dev/autolinks-12345/autolinks-repo/autolinks:latest --region us-central1 --allow-unauthenticated --project autolinks-12345 --max-instances=4

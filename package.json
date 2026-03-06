@@ -1,0 +1,20 @@
+{
+  "name": "autolinks",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "build": "npx tsc",
+    "start": "node dist/index.js",
+    "dev": "npx tsc && node dist/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@types/node": "^25.3.5"
+  },
+  "dependencies": {
+    "typescript": "^5.9.3"
+  }
+}

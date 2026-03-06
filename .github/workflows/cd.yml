@@ -1,11 +1,14 @@
 name: cd
+
 on:
   push:
     branches: [main]
+
 jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
+
     steps:
       - name: Check out code
         uses: actions/checkout@v4
@@ -18,8 +21,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: build code
+      - name: Build code
         run: npm run build
+
       - id: auth
         uses: google-github-actions/auth@v2
         with:
@@ -28,11 +32,8 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
 
-      - name: Use gcloud CLI
-        run: gcloud info
+      - name: Configure Docker auth
+        run: gcloud auth configure-docker us-central1-docker.pkg.dev
 
       - name: Build and push Docker image
-        run: gcloud builds submit --tag us-central1-docker.pkg.dev/autolinks-12345/autolinks-repo/autolinks:latest
-
-      - name: Deploy to Cloud Run
-        run: gcloud run deploy autolinks --image us-central1-docker.pkg.dev/autolinks-12345/autolinks-repo/autolinks:latest --region us-central1 --allow-unauthenticated --project autolinks-12345 --max-instances=4
+        run: gcloud builds submit --tag us-central1-docker.pkg.dev/autolinks-12345/autolinks-repo/autolinks:latest .

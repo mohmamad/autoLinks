@@ -7,6 +7,8 @@ on:
 jobs:
   deploy:
     name: Deploy
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
     runs-on: ubuntu-latest
 
     steps:
@@ -37,5 +39,9 @@ jobs:
 
       - name: Build and push Docker image
         run: gcloud builds submit --tag us-central1-docker.pkg.dev/autolinks-489416/autolinks-repo/autolinks:latest .
+
+      - name: Run migrations
+        run: npm run db:migrate
+
       - name: Deploy to Cloud Run
         run: gcloud run deploy autolinks --image us-central1-docker.pkg.dev/autolinks-489416/autolinks-repo/autolinks:latest --region us-central1 --allow-unauthenticated --project autolinks-489416 --max-instances=4

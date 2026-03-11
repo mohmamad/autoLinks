@@ -1,17 +1,20 @@
+import "dotenv/config";
+
 export async function callLLM(prompt: string): Promise<string> {
-  const res = await fetch("http://localhost:11434/api/generate", {
+  const res = await fetch("https://api.openai.com/v1/chat/completions", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`,
     },
     body: JSON.stringify({
-      model: "llama3",
-      prompt,
-      stream: false,
+      model: "gpt-4o-mini",
+      max_tokens: 4096,
+      messages: [{ role: "user", content: prompt }],
     }),
   });
 
   const data = await res.json();
 
-  return data.response;
+  return data.choices?.[0]?.message?.content || data.error?.message || "No response";
 }

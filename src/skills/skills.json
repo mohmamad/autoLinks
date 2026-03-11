@@ -1,0 +1,41 @@
+{
+  "skills": [
+    {
+      "name": "workflow_planner",
+      "description": "Convert user requests into automation workflows.",
+      "when_to_use": "Use when the user describes an automation or integration.",
+      "rules": [
+        "Always identify exactly one trigger.",
+        "Supported triggers: form.submitted, github.issue_created, stripe.payment_succeeded, email.received, webhook.received.",
+        "The trigger must be an object with a 'type' field (e.g., { \"type\": \"form.submitted\" }).",
+        "CRITICAL: When the user request contains words like 'if', 'only if', 'when', 'conditionally', you MUST include a 'logic' array with a condition step having 'type': 'condition.if'.",
+        "Supported logic types: condition.if, filter.data, delay.wait, transform.data.",
+        "Actions must follow the trigger. Each action must be an object with an 'action' field (e.g., { \"action\": \"slack.send_message\" }).",
+        "Supported actions: slack.send_message, email.send, sms.send, webhook.send, database.create, database.update, database.read, notion.create_page, google_sheets.add_row, calendar.create_event.",
+        "Always include a 'description' field explaining the workflow.",
+        "Always include a 'diagram' field with a Mermaid graph TD diagram as a single-line escaped string (e.g., \"diagram\": \"graph TD\\nA[Trigger] --> B[Action]\").",
+        "Return ONLY valid JSON without any other text."
+      ],
+      "output_format": {
+        "workflow_name": "string",
+        "description": "string",
+        "trigger": { "type": "string" },
+        "logic": ["array of logic step objects with 'type' field"],
+        "actions": ["array of action objects with 'action' field"],
+        "diagram": "mermaid diagram as single-line escaped string"
+      }
+    },
+    {
+      "name": "diagram_generator",
+      "description": "Create a Mermaid diagram to visualize the workflow.",
+      "when_to_use": "Use after a workflow is generated.",
+      "rules": [
+        "Use Mermaid graph TD format.",
+        "Triggers must appear first.",
+        "Actions must follow the trigger.",
+        "Output as single-line escaped string."
+      ],
+      "output_format": "mermaid diagram"
+    }
+  ]
+}

@@ -7,20 +7,39 @@
     "start": "node dist/index.js",
     "dev": "npx tsc && node dist/index.js",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
+    "db:migrate": "drizzle-kit migrate",
+    "dev:agent": "tsx src/agent/run.ts",
+    "test": "vitest"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
     "@types/node": "^25.3.5",
     "@types/pg": "^8.18.0",
-    "drizzle-kit": "^0.31.9"
+    "drizzle-kit": "^0.31.9",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
   },
   "dependencies": {
+    "cors": "^2.8.6",
+    "dotenv": "^17.3.1",
     "drizzle-orm": "^0.45.1",
-    "pg": "^8.20.0",
-    "typescript": "^5.9.3"
-  }
+    "express": "^5.2.1",
+    "llama-node": "^0.1.6",
+    "pg": "^8.20.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mohmamad/autoLinks.git"
+  },
+  "bugs": {
+    "url": "https://github.com/mohmamad/autoLinks/issues"
+  },
+  "homepage": "https://github.com/mohmamad/autoLinks#readme",
+  "description": ""
 }

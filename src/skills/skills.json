@@ -1,41 +1,49 @@
 {
   "skills": [
     {
-      "name": "workflow_planner",
-      "description": "Convert user requests into automation workflows.",
-      "when_to_use": "Use when the user describes an automation or integration.",
+      "name": "action_router",
+      "description": "Translate automation prompts into a single actionable payload that the platform can dispatch to one or more subscriber URLs.",
+      "when_to_use": "Use for every user prompt describing an automation, condition, or routing rule that should result in API calls to downstream subscribers.",
       "rules": [
-        "Always identify exactly one trigger.",
-        "Supported triggers: form.submitted, github.issue_created, stripe.payment_succeeded, email.received, webhook.received.",
-        "The trigger must be an object with a 'type' field (e.g., { \"type\": \"form.submitted\" }).",
-        "CRITICAL: When the user request contains words like 'if', 'only if', 'when', 'conditionally', you MUST include a 'logic' array with a condition step having 'type': 'condition.if'.",
-        "Supported logic types: condition.if, filter.data, delay.wait, transform.data.",
-        "Actions must follow the trigger. Each action must be an object with an 'action' field (e.g., { \"action\": \"slack.send_message\" }).",
-        "Supported actions: slack.send_message, email.send, sms.send, webhook.send, database.create, database.update, database.read, notion.create_page, google_sheets.add_row, calendar.create_event.",
-        "Always include a 'description' field explaining the workflow.",
-        "Always include a 'diagram' field with a Mermaid graph TD diagram as a single-line escaped string (e.g., \"diagram\": \"graph TD\\nA[Trigger] --> B[Action]\").",
-        "Return ONLY valid JSON without any other text."
+        "Return ONLY a valid JSON object that matches the defined output schema.",
+        "Do NOT wrap the JSON in quotes or add explanatory text.",
+        "Always infer an action_name and human-readable description summarizing the requested automation.",
+        "Include at least one input describing how or where the necessary source data is retrieved (URL, method, payload if required).",
+        "Use the available http_request tool to fetch every input URL and mention the measured values (with units if present) in the final response; never call placeholder domains such as api.example.com—only URLs specified or clearly implied by the user.",
+        "If the user provides actual readings or context, still confirm them by calling the API when possible, perform the requested comparison/calculation, and embed the outcome directly inside the chosen result body.",
+        "When the user provides only a URL plus logic, describe the processing briefly but still return concrete values from the fetched payload.",
+        "After evaluating the data, include result entries ONLY for the subscribers that actually need to be notified now. Conditional prompts should usually output a single result (unless multiple subscribers share the same satisfied branch).",
+        "Never include duplicate result entries for alternate conditions unless the data proves that multiple recipients must be notified simultaneously.",
+        "If the user omits a destination for a branch, reuse the best matching destination mentioned elsewhere in the prompt (e.g., the same Gmail address). Always provide an actionable URL for each result (for Gmail notifications, use https://gmail.googleapis.com/gmail/v1/users/me/messages/send).",
+        "Every result entry MUST include url, method (GET/POST/PUT/PATCH/DELETE in uppercase), optional headers, and a body object with the exact payload to send.",
+        "Bodies must be concrete JSON objects referencing the actual measured values or clearly named fields derived from the inputs; avoid vague placeholders other than credentials explicitly supplied by the user.",
+        "When targeting Gmail (https://gmail.googleapis.com/gmail/v1/users/me/messages/send), always populate body with explicit fields: to, subject, message (plain text). Include the measured temperature/metric inside message so downstream services can encode it as needed.",
+        "Use consistent authentication placement inside headers or body depending on the target API's expectation stated in the prompt.",
+        "Only include fields that exist in the schema; no trigger/logic information beyond the diagram is allowed.",
+        "Always append a Mermaid diagram string in graph TD format that visualizes: fetch input -> evaluate condition -> selected notification(s)."
       ],
       "output_format": {
-        "workflow_name": "string",
+        "action_name": "string",
         "description": "string",
-        "trigger": { "type": "string" },
-        "logic": ["array of logic step objects with 'type' field"],
-        "actions": ["array of action objects with 'action' field"],
-        "diagram": "mermaid diagram as single-line escaped string"
+        "inputs": [
+          {
+            "id": "string identifier for the data source",
+            "description": "string explanation of what data comes from this source",
+            "url": "string",
+            "method": "GET|POST|PUT|PATCH|DELETE",
+            "payload": {}
+          }
+        ],
+        "result": [
+          {
+            "url": "string",
+            "method": "GET|POST|PUT|PATCH|DELETE",
+            "headers": {},
+            "body": {}
+          }
+        ],
+        "diagram": "example: graph TD\\nA[Fetch temperature] --> B{Temp > 35C?} -->|Yes| C[Send high-temp email]"
       }
-    },
-    {
-      "name": "diagram_generator",
-      "description": "Create a Mermaid diagram to visualize the workflow.",
-      "when_to_use": "Use after a workflow is generated.",
-      "rules": [
-        "Use Mermaid graph TD format.",
-        "Triggers must appear first.",
-        "Actions must follow the trigger.",
-        "Output as single-line escaped string."
-      ],
-      "output_format": "mermaid diagram"
     }
   ]
 }

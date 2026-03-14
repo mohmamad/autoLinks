@@ -1,55 +1,64 @@
 {
-  "id": "8f1e66cc-8d01-40a9-9e1c-4793bf9768ed",
+  "id": "cbf2c04d-c083-4e22-a6ce-f23efeab4961",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.pipelines": {
-      "name": "pipelines",
+    "public.jobs": {
+      "name": "jobs",
       "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
         "name": {
           "name": "name",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "action": {
-          "name": "action",
-          "type": "varchar(255)",
-          "primaryKey": false,
-          "notNull": true
-        },
-        "incoming_webhook": {
-          "name": "incoming_webhook",
           "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "outgoing_webhook": {
-          "name": "outgoing_webhook",
+        "description": {
+          "name": "description",
           "type": "text",
           "primaryKey": false,
           "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
         },
         "user_id": {
           "name": "user_id",
-          "type": "integer",
+          "type": "uuid",
           "primaryKey": false,
           "notNull": true
         }
       },
       "indexes": {},
       "foreignKeys": {
-        "pipelines_user_id_users_id_fk": {
-          "name": "pipelines_user_id_users_id_fk",
-          "tableFrom": "pipelines",
+        "jobs_user_id_users_id_fk": {
+          "name": "jobs_user_id_users_id_fk",
+          "tableFrom": "jobs",
           "tableTo": "users",
           "columnsFrom": [
             "user_id"
@@ -57,7 +66,7 @@
           "columnsTo": [
             "id"
           ],
-          "onDelete": "no action",
+          "onDelete": "cascade",
           "onUpdate": "no action"
         }
       },
@@ -73,9 +82,10 @@
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "uuid",
           "primaryKey": true,
-          "notNull": true
+          "notNull": true,
+          "default": "gen_random_uuid()"
         },
         "username": {
           "name": "username",

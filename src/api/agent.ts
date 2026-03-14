@@ -1,70 +1,9 @@
 import { Request, Response } from "express";
-import {
-  loadSkills,
-  saveSkills,
-  runWithSkills,
-  Skill,
-} from "../agent/skills.js";
-
-export async function getSkills(_req: Request, res: Response): Promise<void> {
-  const config = loadSkills();
-  res.json(config);
-}
-
-export async function createSkill(
-  req: Request,
-  res: Response
-): Promise<void> {
-  const { name, description, when_to_use, rules, output_format } = req.body as {
-    name?: string;
-    description?: string;
-    when_to_use?: string;
-    rules?: string[];
-    output_format?: any;
-  };
-
-  if (!name || !description || !when_to_use || !rules || !output_format) {
-    res.status(400).json({
-      error:
-        "Missing required fields: name, description, when_to_use, rules, output_format",
-    });
-    return;
-  }
-
-  const config = loadSkills();
-  const newSkill: Skill = {
-    name,
-    description,
-    when_to_use,
-    rules,
-    output_format,
-  };
-  config.skills.push(newSkill);
-  saveSkills(config);
-
-  res.status(201).json({ success: true, skill: newSkill });
-}
-
-export async function deleteSkill(
-  req: Request,
-  res: Response
-): Promise<void> {
-  const { name } = req.params;
-  const config = loadSkills();
-  const initialLength = config.skills.length;
-  config.skills = config.skills.filter((s: Skill) => s.name !== name);
-
-  if (config.skills.length === initialLength) {
-    res.status(404).json({ error: "Skill not found" });
-    return;
-  }
-
-  saveSkills(config);
-  res.json({ success: true });
-}
-
+import { runWithSkills } from "../agent/skills.js";
+import { ActionPlan } from "../types/agent.types.js";
+import { validateActionPlan } from "../agent/validator.js";
 export async function chat(req: Request, res: Response): Promise<void> {
-  const { message } = req.body as { message?: string };
+  const { message } = req.body;
 
   if (!message) {
     res.status(400).json({ error: "Missing required field: message" });
@@ -72,9 +11,17 @@ export async function chat(req: Request, res: Response): Promise<void> {
   }
 
   try {
-    const reply = await runWithSkills(message);
-    res.json({ reply });
+    const result = await runWithSkills(message);
+    const actionPlan: ActionPlan = JSON.parse(result);
+    if (validateActionPlan(actionPlan)) {
+      res.json(actionPlan);
+    } else {
+      res.status(500).json({ error: "Failed to get response" });
+    }
   } catch (error) {
-    res.status(500).json({ error: "Failed to get response" });
+    const message =
+      error instanceof Error ? error.message : "Failed to get response";
+    console.error("Agent error", error);
+    res.status(500).json({ error: message });
   }
 }

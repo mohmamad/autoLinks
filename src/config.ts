@@ -39,7 +39,7 @@ const parseNumber = (value: string | undefined, fallback: number) => {
 
 export const config: AppConfig = {
   api: {
-    port: parseNumber(process.env.PORT, 8010),
+    port: parseNumber(process.env.PORT, 8080),
   },
   db: {
     url: envOrThrow("DATABASE_URL"),

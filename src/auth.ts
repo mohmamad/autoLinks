@@ -3,6 +3,7 @@ import crypto from "crypto";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import type { Request } from "express";
 
+import { BadRequestError, UnauthorizedError } from "./api/errors.js";
 import { config } from "./config.js";
 
 type TokenPayload = Pick<JwtPayload, "iss" | "sub" | "iat" | "exp">;
@@ -35,15 +36,15 @@ export function validateAccessToken(token: string): string {
   try {
     decoded = jwt.verify(token, config.jwt.secret) as JwtPayload;
   } catch {
-    throw new Error("Invalid token");
+    throw new UnauthorizedError("Invalid token");
   }
 
   if (decoded.iss !== config.jwt.issuer) {
-    throw new Error("Invalid token issuer");
+    throw new UnauthorizedError("Invalid token issuer");
   }
 
   if (!decoded.sub) {
-    throw new Error("Token missing subject");
+    throw new UnauthorizedError("Token missing subject");
   }
 
   return decoded.sub;
@@ -52,7 +53,7 @@ export function validateAccessToken(token: string): string {
 export function getBearerToken(req: Request): string {
   const header = req.get("Authorization");
   if (!header) {
-    throw new Error("Missing Authorization header");
+    throw new BadRequestError("Missing Authorization header");
   }
 
   return extractBearerToken(header);
@@ -61,7 +62,7 @@ export function getBearerToken(req: Request): string {
 export function extractBearerToken(header: string): string {
   const [type, token] = header.split(" ");
   if (type !== "Bearer" || !token) {
-    throw new Error("Malformed authorization header");
+    throw new BadRequestError("Malformed authorization header");
   }
 
   return token;

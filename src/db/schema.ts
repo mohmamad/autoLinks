@@ -1,11 +1,4 @@
-import {
-  pgTable,
-  uuid,
-  text,
-  timestamp,
-  serial,
-  varchar,
-} from "drizzle-orm/pg-core";
+import { pgTable, uuid, text, timestamp, varchar } from "drizzle-orm/pg-core";
 
 export const users = pgTable("users", {
   id: uuid("id").defaultRandom().primaryKey(),
@@ -24,4 +17,15 @@ export const jobs = pgTable("jobs", {
   user_id: uuid("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
+});
+
+export const refreshTokens = pgTable("refresh_tokens", {
+  token: varchar("token", { length: 512 }).primaryKey().notNull(),
+  user_id: uuid("user_id")
+    .notNull()
+    .references(() => users.id, { onDelete: "cascade" }),
+  created_at: timestamp("created_at").notNull().defaultNow(),
+  updated_at: timestamp("updated_at").notNull().defaultNow(),
+  expires_at: timestamp("expires_at").notNull(),
+  revoked_at: timestamp("revoked_at"),
 });

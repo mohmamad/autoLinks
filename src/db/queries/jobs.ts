@@ -1,7 +1,8 @@
-// import { jobs } from "../schema";
-// import { db } from "../index";
-// import type { Job } from "src/types/job.types";
 
-// export async function addJob(job: Job): Promise<void> {
-//   await db.insert(jobs).values(job);
-// }
+import { db } from "../index.js";
+import { jobs } from "../schema.js";
+
+export async function addJob(input: typeof jobs.$inferInsert) {
+  const [job] = await db.insert(jobs).values(input).returning();
+  return job;
+}

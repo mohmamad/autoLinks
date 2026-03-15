@@ -45,10 +45,4 @@ jobs:
         run: npm run db:migrate
 
       - name: Deploy to Cloud Run
-        run: gcloud run deploy autolinks \
-          --image us-central1-docker.pkg.dev/autolinks-489416/autolinks-repo/autolinks:latest \
-          --region us-central1 \
-          --allow-unauthenticated \
-          --project autolinks-489416 \
-          --max-instances=4 \
-          --set-env-vars DATABASE_URL=$DATABASE_URL,JWT_SECRET=$JWT_SECRET
+        run: gcloud run deploy autolinks --image us-central1-docker.pkg.dev/autolinks-489416/autolinks-repo/autolinks:latest --region us-central1 --allow-unauthenticated --project autolinks-489416 --max-instances=4 --set-env-vars DATABASE_URL=${{ secrets.DATABASE_URL }},JWT_SECRET=${{ secrets.JWT_SECRET }}

@@ -7,6 +7,8 @@ on:
 jobs:
   deploy:
     name: Deploy
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
     runs-on: ubuntu-latest
 
     steps:

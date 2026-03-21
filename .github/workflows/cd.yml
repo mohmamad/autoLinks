@@ -44,4 +44,4 @@ jobs:
         run: npm run db:migrate
 
       - name: Deploy to Cloud Run
-        run: gcloud run deploy autolinks --image us-central1-docker.pkg.dev/autolinks-489416/autolinks-repo/autolinks:latest --region us-central1 --allow-unauthenticated --project autolinks-489416 --max-instances=4 --set-secrets DATABASE_URL=DATABASE_URL:latest,JWT_SECRET=JWT_SECRET:latest,OPENAI_API_KEY=OPENAI_API_KEY:latest,BREVO_API_KEY=BREVO_API_KEY:latest --set-env-vars BREVO_SENDER=${{ secrets.BREVO_SENDER }},WORKER_CONCURRENCY=5,WORKER_POLL_INTERVAL_MS=2000
+        run: gcloud run deploy autolinks --image us-central1-docker.pkg.dev/autolinks-489416/autolinks-repo/autolinks:latest --region us-central1 --allow-unauthenticated --project autolinks-489416 --max-instances=4 --set-secrets DATABASE_URL=autolinks_db_password:latest,JWT_SECRET=JWT_SECRET:latest,OPENAI_API_KEY=OPENAI_API_KEY:latest,BREVO_API_KEY=BREVO_API_KEY:latest --set-env-vars BREVO_SENDER=${{ secrets.BREVO_SENDER }},WORKER_CONCURRENCY=5,WORKER_POLL_INTERVAL_MS=2000

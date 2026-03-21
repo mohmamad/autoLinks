@@ -1,5 +1,15 @@
 import { describe, it, expect, beforeEach, vi } from "vitest";
 
+vi.hoisted(() => {
+  if (!process.env.DATABASE_URL) {
+    process.env.DATABASE_URL = "postgres://user:pass@localhost:5432/test";
+  }
+  if (!process.env.JWT_SECRET) {
+    process.env.JWT_SECRET = "test-secret";
+  }
+  return {};
+});
+
 import { PipelineService } from "../services/pipelineService.js";
 import type { PiplineRequest } from "../types/pipline.types.js";
 

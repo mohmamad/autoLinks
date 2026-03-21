@@ -1,8 +1,5 @@
 export type ActionPlan = {
-  action_name: string;
-  description: string;
-  inputs: ActionInput[];
-  result: ExecutionResult[];
+  result: Record<string, unknown>;
   diagram: string;
 };
 
@@ -12,11 +9,4 @@ export type ActionInput = {
   url: string;
   method: string;
   payload?: Record<string, unknown>;
-};
-
-export type ExecutionResult = {
-  url: string;
-  method: string;
-  headers?: Record<string, string>;
-  body: Record<string, unknown>;
 };

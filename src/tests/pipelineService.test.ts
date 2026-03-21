@@ -7,6 +7,9 @@ vi.hoisted(() => {
   if (!process.env.JWT_SECRET) {
     process.env.JWT_SECRET = "test-secret";
   }
+  if (!process.env.BREVO_API_KEY && !process.env.SENDINBLUE_API_KEY) {
+    process.env.BREVO_API_KEY = "test-brevo-key";
+  }
   return {};
 });
 

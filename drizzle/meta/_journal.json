@@ -15,6 +15,48 @@
       "when": 1773441519961,
       "tag": "0001_concerned_pet_avengers",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1773697907815,
+      "tag": "0002_natural_ulik",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1773713441833,
+      "tag": "0003_clean_jubilee",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1773800383276,
+      "tag": "0004_panoramic_gravity",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1773803127553,
+      "tag": "0005_rapid_power_pack",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1773962529922,
+      "tag": "0006_giant_prima",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1773987238947,
+      "tag": "0007_quick_shinko_yamashiro",
+      "breakpoints": true
     }
   ]
 }

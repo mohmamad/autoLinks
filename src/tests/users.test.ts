@@ -3,36 +3,28 @@ import type { Request, Response } from "express";
 
 import { login } from "../api/auth.js";
 import { signup } from "../api/users.js";
-import {
-  BadRequestError,
-  ConflictError,
-  UnauthorizedError,
-} from "../api/errors.js";
+import { BadRequestError } from "../api/errors.js";
 
-const userQueryMocks = vi.hoisted(() => ({
-  getUserByEmail: vi.fn(),
-  createUser: vi.fn(),
-  toPublicUser: vi.fn(),
+const userServiceMocks = vi.hoisted(() => ({
+  userService: {
+    register: vi.fn(),
+  },
 }));
 
-const refreshTokenMocks = vi.hoisted(() => ({
-  addRefreshToken: vi.fn(),
-  getRefreshTokenByValue: vi.fn(),
-  revokeRefreshToken: vi.fn(),
+const authServiceMocks = vi.hoisted(() => ({
+  authService: {
+    login: vi.fn(),
+    refreshAccessToken: vi.fn(),
+    logout: vi.fn(),
+    verifyAccessToken: vi.fn(),
+  },
 }));
 
-const authMocks = vi.hoisted(() => ({
-  hashPassword: vi.fn(),
-  makeAccessToken: vi.fn(),
-  generateRefreshToken: vi.fn(),
-  verifyPassword: vi.fn(),
-  getBearerToken: vi.fn(),
-  validateAccessToken: vi.fn(),
+vi.mock("../services/userService.js", () => userServiceMocks);
+vi.mock("../services/authService.js", () => authServiceMocks);
+vi.mock("../auth.js", () => ({
+  getBearerToken: vi.fn((req: Request) => req.headers?.authorization ?? ""),
 }));
-
-vi.mock("../db/queries/users.js", () => userQueryMocks);
-vi.mock("../db/queries/refreshTokens.js", () => refreshTokenMocks);
-vi.mock("../auth.js", () => authMocks);
 
 function createMockResponse() {
   return {
@@ -59,34 +51,16 @@ describe("signup", () => {
     } as Request;
     const res = createMockResponse();
 
-    const createdUser = {
-      id: "user-1",
-      username: "alice",
-      email: "alice@test.com",
-      password: "hash",
-    };
-
-    userQueryMocks.getUserByEmail.mockResolvedValueOnce(null);
-    authMocks.hashPassword.mockResolvedValueOnce("hashed-pass");
-    userQueryMocks.createUser.mockResolvedValueOnce(createdUser);
-    userQueryMocks.toPublicUser.mockReturnValueOnce({
-      id: "user-1",
-      username: "alice",
-      email: "alice@test.com",
+    userServiceMocks.userService.register.mockResolvedValueOnce({
+      user: { id: "user-1", username: "alice", email: "alice@test.com" },
+      token: "access-token",
+      refreshToken: "refresh-token",
     });
-    authMocks.makeAccessToken.mockReturnValueOnce("access-token");
-    authMocks.generateRefreshToken.mockReturnValueOnce("refresh-token");
 
     await signup(req, res);
 
-    expect(userQueryMocks.createUser).toHaveBeenCalledWith({
-      username: "alice",
-      email: "alice@test.com",
-      password: "hashed-pass",
-    });
-    expect(refreshTokenMocks.addRefreshToken).toHaveBeenCalledWith(
-      "user-1",
-      "refresh-token",
+    expect(userServiceMocks.userService.register).toHaveBeenCalledWith(
+      req.body,
     );
     expect(res.header).toHaveBeenCalledWith(
       "Content-Type",
@@ -106,24 +80,16 @@ describe("signup", () => {
     );
   });
 
-  it("throws when provided input is invalid", async () => {
+  it("surfacing errors from the service", async () => {
     const req = { body: { username: "", email: "", password: "" } } as Request;
     const res = createMockResponse();
 
+    userServiceMocks.userService.register.mockRejectedValueOnce(
+      new BadRequestError("username, email and password are required"),
+    );
+
     await expect(signup(req, res)).rejects.toBeInstanceOf(BadRequestError);
   });
-
-  it("rejects duplicate email addresses", async () => {
-    const req = {
-      body: { username: "alice", email: "alice@test.com", password: "pass" },
-    } as Request;
-    const res = createMockResponse();
-
-    userQueryMocks.getUserByEmail.mockResolvedValueOnce({ id: "user-1" });
-
-    await expect(signup(req, res)).rejects.toBeInstanceOf(ConflictError);
-  });
-});
 
 describe("login", () => {
   beforeEach(() => {
@@ -136,31 +102,7 @@ describe("login", () => {
     } as Request;
     const res = createMockResponse();
 
-    const userRecord = {
-      id: "user-1",
-      username: "alice",
-      email: "alice@test.com",
-      password: "hash",
-    };
-
-    userQueryMocks.getUserByEmail.mockResolvedValueOnce(userRecord);
-    authMocks.verifyPassword.mockResolvedValueOnce(true);
-    authMocks.makeAccessToken.mockReturnValueOnce("access-token");
-    authMocks.generateRefreshToken.mockReturnValueOnce("refresh-token");
-    userQueryMocks.toPublicUser.mockReturnValueOnce({
-      id: "user-1",
-      username: "alice",
-      email: "alice@test.com",
-    });
-
-    await login(req, res);
-
-    expect(authMocks.verifyPassword).toHaveBeenCalledWith("secret", "hash");
-    expect(refreshTokenMocks.addRefreshToken).toHaveBeenCalledWith(
-      "user-1",
-      "refresh-token",
-    );
-    expect(res.json).toHaveBeenCalledWith({
+    authServiceMocks.authService.login.mockResolvedValueOnce({
       user: {
         id: "user-1",
         username: "alice",
@@ -169,23 +111,26 @@ describe("login", () => {
       token: "access-token",
       refreshToken: "refresh-token",
     });
+
+    await login(req, res);
+
+    expect(authServiceMocks.authService.login).toHaveBeenCalledWith(req.body);
+    expect(res.header).toHaveBeenCalledWith(
+      "Content-Type",
+      "application/json",
+    );
+    expect(res.status).toHaveBeenCalledWith(200);
+    expect(res.send).toHaveBeenCalledWith(
+      JSON.stringify({
+        user: {
+          id: "user-1",
+          username: "alice",
+          email: "alice@test.com",
+        },
+        token: "access-token",
+        refreshToken: "refresh-token",
+      }),
+    );
   });
-
-  it("throws when email or password is missing", async () => {
-    const req = { body: { email: "", password: "" } } as Request;
-    const res = createMockResponse();
-
-    await expect(login(req, res)).rejects.toBeInstanceOf(BadRequestError);
-  });
-
-  it("throws when credentials are invalid", async () => {
-    const req = {
-      body: { email: "alice@test.com", password: "secret" },
-    } as Request;
-    const res = createMockResponse();
-
-    userQueryMocks.getUserByEmail.mockResolvedValueOnce(null);
-  
-    await expect(login(req, res)).rejects.toBeInstanceOf(UnauthorizedError);
-  });
+});
 });

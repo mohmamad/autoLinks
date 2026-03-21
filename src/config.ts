@@ -17,10 +17,15 @@ type DBConfig = {
   url: string;
 };
 
+type BrevoConfig = {
+  apiKey: string;
+};
+
 type AppConfig = {
   api: APIConfig;
   db: DBConfig;
   jwt: JWTConfig;
+  brevo: BrevoConfig;
 };
 
 function envOrThrow(key: string): string {
@@ -55,5 +60,17 @@ export const config: AppConfig = {
       process.env.JWT_REFRESH_TTL_MS,
       60 * 60 * 24 * 30 * 1000,
     ),
+  },
+  brevo: {
+    apiKey: (() => {
+      const apiKey =
+        process.env.BREVO_API_KEY ?? process.env.SENDINBLUE_API_KEY;
+      if (!apiKey) {
+        throw new Error(
+          "BREVO_API_KEY or SENDINBLUE_API_KEY environment variable must be configured",
+        );
+      }
+      return apiKey;
+    })(),
   },
 };

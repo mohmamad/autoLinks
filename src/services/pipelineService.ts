@@ -53,7 +53,7 @@ export class PipelineService {
 
     return {
       pipeline,
-      webhookUrl: `https://autolinks-715561346779.us-central1.run.app/${webhookId}`,
+      webhookUrl: `https://autolinks-715561346779.us-central1.run.app/autolinks/${webhookId}`,
     };
   }
 

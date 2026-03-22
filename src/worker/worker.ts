@@ -7,10 +7,10 @@ import { pipelineService } from "../services/pipelineService.js";
 
 const WORKER_RETRY_BASE_MS = Number(process.env.WORKER_RETRY_BASE_MS ?? 5000);
 
-export async function executeJob() {
+export async function executeJob(): Promise<boolean> {
   const job = await jobService.getNextJobWithPipeline();
   if (!job) {
-    return;
+    return false;
   }
 
   const actionPlan = await getActionPlan(
@@ -44,7 +44,7 @@ export async function executeJob() {
 
   if (isSuccessful) {
     await jobService.markJobDone(job.jobs.id);
-    return;
+    return true;
   }
 
   const nextRetryCount = job.jobs.retry_count + 1;
@@ -56,6 +56,8 @@ export async function executeJob() {
   } else {
     await jobService.markJobFailed(job.jobs.id);
   }
+
+  return true;
 }
 
 export async function getActionPlan(message: string, payload: string | null) {

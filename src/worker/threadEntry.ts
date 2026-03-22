@@ -2,9 +2,11 @@ import { parentPort } from "node:worker_threads";
 
 import { executeJob } from "./worker.js";
 
-async function runJob() {
+async function runJobsUntilIdle() {
   try {
-    await executeJob();
+    while (await executeJob()) {
+      // Keep draining the queue until no runnable jobs remain.
+    }
     parentPort?.postMessage({ type: "done" });
   } catch (error) {
     const message =
@@ -16,9 +18,9 @@ async function runJob() {
 if (parentPort) {
   parentPort.on("message", (message) => {
     if (message?.type === "run") {
-      void runJob();
+      void runJobsUntilIdle();
     }
   });
 } else {
-  void runJob();
+  void runJobsUntilIdle();
 }

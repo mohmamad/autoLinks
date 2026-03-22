@@ -1,7 +1,7 @@
 import { eq } from "drizzle-orm";
 
 import { db } from "../db/index.js";
-import { pipelines } from "../db/schema.js";
+import { jobs, pipelines } from "../db/schema.js";
 
 export class PipelineRepository {
   async create(input: typeof pipelines.$inferInsert) {
@@ -9,7 +9,7 @@ export class PipelineRepository {
     return record;
   }
 
-  async findByWebhookId(webhookId: string) {
+  async getPipelineByWebhookId(webhookId: string) {
     const [record] = await db
       .select()
       .from(pipelines)
@@ -18,13 +18,25 @@ export class PipelineRepository {
     return record ?? null;
   }
 
-  async findById(id: string) {
+  async getPipelineById(pipelineId: string) {
     const [record] = await db
       .select()
       .from(pipelines)
-      .where(eq(pipelines.id, id))
+      .where(eq(pipelines.id, pipelineId))
       .limit(1);
     return record ?? null;
+  }
+
+  async getPipelinesByUserId(userId: string) {
+    const records = await db
+      .select({
+        name: pipelines.name,
+        description: pipelines.description,
+        weghookId: pipelines.webhook_id,
+      })
+      .from(pipelines)
+      .where(eq(pipelines.user_id, userId));
+    return records;
   }
 }
 

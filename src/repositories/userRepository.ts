@@ -9,7 +9,7 @@ export class UserRepository {
     return user;
   }
 
-  async findByEmail(email: string) {
+  async getUserByEmail(email: string) {
     const [user] = await db
       .select()
       .from(users)
@@ -18,7 +18,7 @@ export class UserRepository {
     return user ?? null;
   }
 
-  async findById(id: string) {
+  async getUserById(id: string) {
     const [user] = await db
       .select()
       .from(users)

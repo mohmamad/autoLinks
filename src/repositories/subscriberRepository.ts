@@ -5,14 +5,11 @@ import { subscripers } from "../db/schema.js";
 
 export class SubscriberRepository {
   async create(input: typeof subscripers.$inferInsert) {
-    const [subscriber] = await db
-      .insert(subscripers)
-      .values(input)
-      .returning();
+    const [subscriber] = await db.insert(subscripers).values(input).returning();
     return subscriber;
   }
 
-  async listByPipelineId(pipelineId: string) {
+  async getSubscriperByPipelineId(pipelineId: string) {
     const records = await db
       .select()
       .from(subscripers)

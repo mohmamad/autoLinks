@@ -13,7 +13,7 @@ export class RefreshTokenRepository {
     });
   }
 
-  async findByToken(token: string) {
+  async getByToken(token: string) {
     const [record] = await db
       .select()
       .from(refreshTokens)

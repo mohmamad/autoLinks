@@ -1,7 +1,4 @@
-import {
-  BadRequestError,
-  ConflictError,
-} from "../api/errors.js";
+import { BadRequestError, ConflictError } from "../api/errors.js";
 import {
   generateRefreshToken,
   hashPassword,
@@ -34,7 +31,7 @@ export class UserService {
     const normalizedUsername = signupRequest.username.trim();
     const sanitizedPassword = signupRequest.password.trim();
 
-    const existingUser = await this.users.findByEmail(normalizedEmail);
+    const existingUser = await this.users.getUserByEmail(normalizedEmail);
     if (existingUser) {
       throw new ConflictError("Email already in use");
     }

@@ -22,3 +22,10 @@ export async function addPipelineHandler(
 
   respondWithJSON(res, 201, webhookUrl);
 }
+
+export async function getPipelinesHandler(req: Request, res: Response) {
+  const token = getBearerToken(req);
+  const userId = authService.verifyAccessToken(token);
+  const pipelines = await pipelineService.getPipelinesByUserId(userId);
+  respondWithJSON(res, 200, pipelines);
+}

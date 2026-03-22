@@ -1,0 +1,133 @@
+.navbar {
+  background: var(--al-surface);
+  border-bottom: 1px solid var(--al-border);
+  padding: 0.6rem 0;
+}
+
+.nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  min-width: 0;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-shrink: 0;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 1.2rem;
+  color: #fff !important;
+  letter-spacing: 0.5px;
+  text-decoration: none;
+  flex-shrink: 0;
+
+  &:hover {
+    text-decoration: none;
+  }
+}
+
+.brand-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 7px;
+  background: var(--al-primary);
+  color: #fff;
+  font-size: 0.95rem;
+}
+
+.nav-separator {
+  width: 1px;
+  height: 24px;
+  background: var(--al-border-light);
+  flex-shrink: 0;
+}
+
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid var(--al-border);
+  color: var(--al-text-muted);
+  font-size: 0.85rem;
+  text-decoration: none;
+  transition: all 0.15s;
+  flex-shrink: 0;
+
+  &:hover {
+    background: var(--al-surface-light);
+    color: var(--al-text);
+    border-color: var(--al-border-light);
+    text-decoration: none;
+  }
+}
+
+.page-title-block {
+  min-width: 0;
+}
+
+.page-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.2;
+  color: var(--al-text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.page-subtitle {
+  font-size: 0.72rem;
+  margin: 0;
+  color: var(--al-text-dim);
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.user-badge {
+  color: var(--al-text-muted);
+  font-size: 0.85rem;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.btn-logout {
+  color: var(--al-text-muted);
+  border: 1px solid var(--al-border);
+  border-radius: var(--al-radius-sm);
+  font-weight: 500;
+  font-size: 0.8rem;
+  padding: 0.3rem 0.7rem;
+  background: transparent;
+  transition: all 0.15s;
+  white-space: nowrap;
+
+  &:hover {
+    background: var(--al-surface-light);
+    color: var(--al-text);
+    border-color: var(--al-border-light);
+  }
+}

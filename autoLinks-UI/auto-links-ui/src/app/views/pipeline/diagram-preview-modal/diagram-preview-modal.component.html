@@ -1,0 +1,40 @@
+<div class="modal-backdrop fade show"></div>
+<div class="modal d-block fade show" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-diagram-3 me-2"></i>Pipeline Preview
+        </h5>
+        <button type="button" class="btn-close" (click)="onClose()"></button>
+      </div>
+      <div class="modal-body text-center p-4">
+        @if (loading) {
+          <div class="py-4">
+            <div class="loading-orb">
+              <div class="spinner-border"></div>
+            </div>
+            <p class="text-muted mt-3">Generating diagram...</p>
+          </div>
+        } @else if (diagramSvg) {
+          <div class="mermaid-container" [innerHTML]="diagramSvg"></div>
+        }
+        @if (errorMessage && !loading) {
+          <div class="alert alert-danger mt-3">{{ errorMessage }}</div>
+        }
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary" (click)="onClose()">
+          Back to Edit
+        </button>
+        <button
+          class="btn btn-primary"
+          (click)="onConfirm()"
+          [disabled]="loading || !!errorMessage"
+        >
+          <i class="bi bi-check-lg me-1"></i>Confirm &amp; Create
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

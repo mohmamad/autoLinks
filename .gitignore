@@ -2,3 +2,7 @@ node_modules/
 dist/
 .env
 .vscode
+autoLinks-UI/__MACOSX/
+autoLinks-UI/auto-links-ui/node_modules/
+autoLinks-UI/auto-links-ui/dist/
+autoLinks-UI/auto-links-ui/.angular/cache/

@@ -4,7 +4,7 @@ import { Worker } from "node:worker_threads";
 
 import { getDiagram } from "./api/agent.js";
 import { login, logout, refresh } from "./api/auth.js";
-import { addPipelineHandler } from "./api/pipeline.js";
+import { addPipelineHandler, getPipelinesHandler } from "./api/pipeline.js";
 import { signup } from "./api/users.js";
 import { config } from "./config.js";
 import {
@@ -12,7 +12,6 @@ import {
   middlewareErrorLogger,
 } from "./api/middleware.js";
 import { autolinkHandler } from "./api/autolinks.js";
-import { sendSlackMessage } from "./worker/subscripers.js";
 
 const app = express();
 const port = config.api.port;
@@ -122,6 +121,10 @@ app.post("/pipelines", (req, res, next) => {
 
 app.post("/autolinks/:webhookId", (req, res, next) => {
   Promise.resolve(autolinkHandler(req, res)).catch(next);
+});
+
+app.get("/pipelines", (req, res, next) => {
+  Promise.resolve(getPipelinesHandler(req, res)).catch(next);
 });
 
 app.use(middlewareErrorLogger);

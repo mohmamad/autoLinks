@@ -1,7 +1,4 @@
-import {
-  BadRequestError,
-  UnauthorizedError,
-} from "../api/errors.js";
+import { BadRequestError, UnauthorizedError } from "../api/errors.js";
 import {
   generateRefreshToken,
   makeAccessToken,
@@ -33,12 +30,15 @@ export class AuthService {
     const normalizedEmail = loginRequest.email.trim().toLowerCase();
     const sanitizedPassword = loginRequest.password.trim();
 
-    const user = await this.users.findByEmail(normalizedEmail);
+    const user = await this.users.getUserByEmail(normalizedEmail);
     if (!user) {
       throw new UnauthorizedError("Invalid credentials");
     }
 
-    const passwordMatches = await verifyPassword(sanitizedPassword, user.password);
+    const passwordMatches = await verifyPassword(
+      sanitizedPassword,
+      user.password,
+    );
     if (!passwordMatches) {
       throw new UnauthorizedError("Invalid credentials");
     }
@@ -55,7 +55,7 @@ export class AuthService {
   }
 
   async refreshAccessToken(bearerToken: string) {
-    const refreshTokenRecord = await this.refreshTokens.findByToken(bearerToken);
+    const refreshTokenRecord = await this.refreshTokens.getByToken(bearerToken);
 
     if (!refreshTokenRecord) {
       throw new UnauthorizedError("Invalid refresh token");

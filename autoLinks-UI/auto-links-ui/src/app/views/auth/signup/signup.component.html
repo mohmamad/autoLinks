@@ -1,0 +1,113 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-header">
+      <div class="auth-logo">
+        <i class="bi bi-link-45deg"></i>
+      </div>
+      <h3>Create your account</h3>
+      <p class="text-muted">Get started with AutoLinks</p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()">
+      <div class="mb-3">
+        <label for="username" class="form-label">Username</label>
+        <div class="input-icon-group">
+          <i class="bi bi-person"></i>
+          <input
+            id="username"
+            type="text"
+            class="form-control"
+            formControlName="username"
+            placeholder="Choose a username"
+            [class.is-invalid]="form.get('username')?.touched && form.get('username')?.invalid"
+          />
+        </div>
+        @if (form.get('username')?.touched && form.get('username')?.hasError('required')) {
+          <div class="field-error">Username is required.</div>
+        }
+        @if (form.get('username')?.touched && form.get('username')?.hasError('minlength')) {
+          <div class="field-error">Username must be at least 3 characters.</div>
+        }
+      </div>
+
+      <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <div class="input-icon-group">
+          <i class="bi bi-envelope"></i>
+          <input
+            id="email"
+            type="email"
+            class="form-control"
+            formControlName="email"
+            placeholder="you@example.com"
+            [class.is-invalid]="form.get('email')?.touched && form.get('email')?.invalid"
+          />
+        </div>
+        @if (form.get('email')?.touched && form.get('email')?.hasError('required')) {
+          <div class="field-error">Email is required.</div>
+        }
+        @if (form.get('email')?.touched && form.get('email')?.hasError('email')) {
+          <div class="field-error">Please enter a valid email.</div>
+        }
+      </div>
+
+      <div class="mb-3">
+        <label for="password" class="form-label">Password</label>
+        <div class="input-icon-group">
+          <i class="bi bi-lock"></i>
+          <input
+            id="password"
+            type="password"
+            class="form-control"
+            formControlName="password"
+            [class.is-invalid]="form.get('password')?.touched && form.get('password')?.invalid"
+          />
+        </div>
+        @if (form.get('password')?.touched && form.get('password')?.hasError('required')) {
+          <div class="field-error">Password is required.</div>
+        }
+        @if (form.get('password')?.touched && form.get('password')?.hasError('minlength')) {
+          <div class="field-error">Password must be at least 6 characters.</div>
+        }
+      </div>
+
+      <div class="mb-4">
+        <label for="confirmPassword" class="form-label">Confirm Password</label>
+        <div class="input-icon-group">
+          <i class="bi bi-shield-lock"></i>
+          <input
+            id="confirmPassword"
+            type="password"
+            class="form-control"
+            formControlName="confirmPassword"
+            [class.is-invalid]="
+              form.get('confirmPassword')?.touched &&
+              (form.get('confirmPassword')?.invalid || form.hasError('passwordMismatch'))
+            "
+          />
+        </div>
+        @if (form.get('confirmPassword')?.touched && form.get('confirmPassword')?.hasError('required')) {
+          <div class="field-error">Please confirm your password.</div>
+        }
+        @if (form.get('confirmPassword')?.touched && form.hasError('passwordMismatch') && !form.get('confirmPassword')?.hasError('required')) {
+          <div class="field-error">Passwords do not match.</div>
+        }
+      </div>
+
+      @if (errorMessage) {
+        <div class="alert alert-danger py-2">{{ errorMessage }}</div>
+      }
+
+      <button type="submit" class="btn btn-primary w-100 btn-lg" [disabled]="loading">
+        @if (loading) {
+          <span class="spinner-border spinner-border-sm me-1"></span>
+        }
+        Create Account
+      </button>
+    </form>
+
+    <p class="auth-footer">
+      Already have an account? <a routerLink="/login">Sign in</a>
+    </p>
+  </div>
+</div>

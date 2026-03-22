@@ -1,0 +1,49 @@
+.mermaid-container {
+  overflow-x: auto;
+  padding: 1rem;
+
+  :host ::ng-deep svg {
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+.loading-orb {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  background: var(--al-surface-light);
+  border: 1px solid var(--al-border);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-backdrop {
+  z-index: 1040;
+  background: rgba(15, 15, 19, 0.7);
+  backdrop-filter: blur(4px);
+}
+
+.modal {
+  z-index: 1050;
+}
+
+.modal-content {
+  background: var(--al-surface);
+  border: 1px solid var(--al-border);
+  border-radius: 16px;
+  color: var(--al-text);
+}
+
+.modal-header {
+  border-bottom: 1px solid var(--al-border);
+}
+
+.modal-footer {
+  border-top: 1px solid var(--al-border);
+}
+
+.btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
+}

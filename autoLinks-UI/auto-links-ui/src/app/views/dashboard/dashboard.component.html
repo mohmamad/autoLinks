@@ -1,0 +1,72 @@
+<div class="dashboard-wrapper">
+  <div class="container py-4">
+    <div class="d-flex justify-content-end gap-2 mb-4">
+      <button class="btn btn-outline-secondary" (click)="refresh()" [disabled]="loading">
+        @if (loading) {
+          <span class="spinner-border spinner-border-sm me-1"></span>
+        } @else {
+          <i class="bi bi-arrow-clockwise me-1"></i>
+        }
+        Refresh
+      </button>
+      <a routerLink="/pipelines/new" class="btn btn-primary">
+        <i class="bi bi-plus-lg me-1"></i>Add Pipeline
+      </a>
+    </div>
+
+    <div class="search-card mb-4">
+      <div class="input-group">
+        <span class="input-group-text"><i class="bi bi-search"></i></span>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Search pipelines by name or description..."
+          [ngModel]="searchTerm()"
+          (ngModelChange)="onSearch($event)"
+        />
+      </div>
+    </div>
+
+    <div class="table-card">
+      <div class="table-responsive">
+        <table class="table mb-0">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Description</th>
+              <th>Status</th>
+              <th>Webhook URL</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (p of filteredPipelines(); track p.id) {
+              <tr>
+                <td class="text-muted small font-monospace">{{ p.id | slice:0:8 }}...</td>
+                <td class="fw-semibold">{{ p.name }}</td>
+                <td class="text-muted">{{ p.description }}</td>
+                <td>
+                  <span class="status-badge" [ngClass]="statusBadgeClass(p.status)">
+                    <span class="status-dot"></span>
+                    {{ p.status }}
+                  </span>
+                </td>
+                <td><code class="webhook-url">{{ p.webhookUrl }}</code></td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="5" class="empty-state">
+                  <div class="empty-icon">
+                    <i class="bi bi-diagram-3"></i>
+                  </div>
+                  <h5>No pipelines yet</h5>
+                  <p class="text-muted">Click "Add Pipeline" to create your first automation.</p>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

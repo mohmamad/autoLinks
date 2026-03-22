@@ -7,6 +7,7 @@ import {
 } from "../repositories/index.js";
 import { assertUrlAllowed } from "./httpClient.js";
 import type { PiplineRequest } from "../types/pipline.types.js";
+import { pipeline } from "node:stream";
 
 const isValidString = (value: unknown): value is string =>
   typeof value === "string" && value.trim().length > 0;
@@ -30,7 +31,10 @@ export class PipelineService {
       throw new BadRequestError("name and description are required");
     }
 
-    if (!Array.isArray(request.subscribers) || request.subscribers.length === 0) {
+    if (
+      !Array.isArray(request.subscribers) ||
+      request.subscribers.length === 0
+    ) {
       throw new BadRequestError("Subscribers are required");
     }
 
@@ -49,16 +53,24 @@ export class PipelineService {
 
     return {
       pipeline,
-      webhookUrl: `http://localhost:8080/autolinks/${webhookId}`,
+      webhookUrl: `https://autolinks-715561346779.us-central1.run.app/${webhookId}`,
     };
   }
 
   async getPipelineByWebhookId(webhookId: string) {
-    return this.pipelines.findByWebhookId(webhookId);
+    return await this.pipelines.getPipelineByWebhookId(webhookId);
+  }
+
+  async getPipelinesByUserId(userId: string) {
+    const pipelines = await this.pipelines.getPipelinesByUserId(userId);
+    for (const pipeline of pipelines) {
+      pipeline.weghookId = `https://autolinks-715561346779.us-central1.run.app/${pipeline.weghookId}`;
+    }
+    return pipelines;
   }
 
   async listSubscribers(pipelineId: string) {
-    return this.subscribers.listByPipelineId(pipelineId);
+    return await this.subscribers.getSubscriperByPipelineId(pipelineId);
   }
 
   private async createSubscriber(

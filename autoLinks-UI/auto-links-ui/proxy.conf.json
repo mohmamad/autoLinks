@@ -1,0 +1,37 @@
+{
+  "/users": {
+    "target": "https://autolinks-715561346779.us-central1.run.app",
+    "secure": true,
+    "changeOrigin": true
+  },
+  "/users/*": {
+    "target": "https://autolinks-715561346779.us-central1.run.app",
+    "secure": true,
+    "changeOrigin": true
+  },
+  "/pipelines": {
+    "target": "https://autolinks-715561346779.us-central1.run.app",
+    "secure": true,
+    "changeOrigin": true
+  },
+  "/pipelines/*": {
+    "target": "https://autolinks-715561346779.us-central1.run.app",
+    "secure": true,
+    "changeOrigin": true
+  },
+  "/autolinks": {
+    "target": "https://autolinks-715561346779.us-central1.run.app",
+    "secure": true,
+    "changeOrigin": true
+  },
+  "/autolinks/*": {
+    "target": "https://autolinks-715561346779.us-central1.run.app",
+    "secure": true,
+    "changeOrigin": true
+  },
+  "/health": {
+    "target": "https://autolinks-715561346779.us-central1.run.app",
+    "secure": true,
+    "changeOrigin": true
+  }
+}

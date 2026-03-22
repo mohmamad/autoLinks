@@ -1,0 +1,28 @@
+<div class="modal-backdrop fade show"></div>
+<div class="modal d-block fade show" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content p-4">
+      <div class="text-center mb-3">
+        <div class="success-icon">
+          <i class="bi bi-check-lg"></i>
+        </div>
+        <h4>Pipeline Created!</h4>
+        <p class="text-muted">Your automation is ready. Here's the webhook URL:</p>
+      </div>
+      <div class="input-group mb-4">
+        <input
+          type="text"
+          class="form-control font-monospace small"
+          [value]="webhookUrl"
+          readonly
+        />
+        <button class="btn btn-outline-primary" (click)="copyUrl()">
+          <i class="bi bi-clipboard me-1"></i>Copy
+        </button>
+      </div>
+      <button class="btn btn-primary w-100" (click)="onGoToDashboard()">
+        Go to Dashboard
+      </button>
+    </div>
+  </div>
+</div>

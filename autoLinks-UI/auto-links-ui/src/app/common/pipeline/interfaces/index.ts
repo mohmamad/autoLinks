@@ -5,3 +5,4 @@ export type { ISubscriber } from './subscriber.interface';
 export type { IPipeline } from './pipeline.interface';
 export type { ICreatePipelineRequest } from './create-pipeline-request.interface';
 export type { IDiagramResponse } from './diagram-response.interface';
+export type { IPipelineJob } from './job.interface';

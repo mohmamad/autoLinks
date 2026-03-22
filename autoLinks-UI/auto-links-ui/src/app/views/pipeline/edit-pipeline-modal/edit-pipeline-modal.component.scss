@@ -1,0 +1,51 @@
+.modal-backdrop {
+  z-index: 1040;
+  background: rgba(15, 15, 19, 0.7);
+  backdrop-filter: blur(4px);
+}
+
+.modal {
+  z-index: 1050;
+}
+
+.modal-content {
+  background: var(--al-surface);
+  border: 1px solid var(--al-border);
+  border-radius: 16px;
+  color: var(--al-text);
+}
+
+.modal-header,
+.modal-footer {
+  border-color: var(--al-border);
+}
+
+.btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+.subscriber-card {
+  background: var(--al-surface-light);
+  border: 1px solid var(--al-border);
+  border-radius: var(--al-radius);
+  padding: 1.25rem;
+}
+
+.subscriber-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.subscriber-number {
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: var(--al-primary);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.75rem;
+  font-weight: 700;
+}

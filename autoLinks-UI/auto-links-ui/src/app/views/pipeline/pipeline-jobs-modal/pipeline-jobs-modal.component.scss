@@ -1,0 +1,73 @@
+.modal-backdrop {
+  z-index: 1040;
+  background: rgba(15, 15, 19, 0.7);
+  backdrop-filter: blur(4px);
+}
+
+.modal {
+  z-index: 1050;
+}
+
+.modal-content {
+  background: var(--al-surface);
+  border: 1px solid var(--al-border);
+  border-radius: 16px;
+  color: var(--al-text);
+}
+
+.modal-header,
+.modal-footer {
+  border-color: var(--al-border);
+}
+
+.btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+.badge {
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.badge.pending {
+  background: rgba(255, 193, 7, 0.2);
+  color: #ffc107;
+}
+
+.badge.running {
+  background: rgba(13, 202, 240, 0.2);
+  color: #0dcaf0;
+}
+
+.badge.done {
+  background: rgba(62, 207, 142, 0.2);
+  color: var(--al-success);
+}
+
+.badge.failed {
+  background: rgba(239, 95, 95, 0.2);
+  color: var(--al-danger);
+}
+
+.payload {
+  background: var(--al-surface-light);
+  border: 1px solid var(--al-border);
+  border-radius: var(--al-radius-sm);
+  padding: 0.75rem;
+  font-size: 0.8rem;
+  max-height: 200px;
+  overflow: auto;
+  margin: 0;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: var(--al-text-muted);
+}
+
+.empty-state i {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  color: var(--al-border-light);
+}

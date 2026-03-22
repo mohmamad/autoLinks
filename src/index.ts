@@ -3,7 +3,13 @@ import cors from "cors";
 
 import { getDiagram } from "./api/agent.js";
 import { login, logout, refresh } from "./api/auth.js";
-import { addPipelineHandler, getPipelinesHandler } from "./api/pipeline.js";
+import {
+  addPipelineHandler,
+  deletePipelineHandler,
+  getPipelineJobsHandler,
+  getPipelinesHandler,
+  updatePipelineHandler,
+} from "./api/pipeline.js";
 import { signup } from "./api/users.js";
 import { config } from "./config.js";
 import {
@@ -12,6 +18,8 @@ import {
 } from "./api/middleware.js";
 import { autolinkHandler } from "./api/autolinks.js";
 import { executeJob } from "./worker/worker.js";
+
+export { runWorkerLoop };
 
 const app = express();
 const port = config.api.port;
@@ -56,6 +64,18 @@ app.post("/users/logout", (req, res, next) => {
 
 app.post("/pipelines", (req, res, next) => {
   Promise.resolve(addPipelineHandler(req, res)).catch(next);
+});
+
+app.put("/pipelines/:pipelineId", (req, res, next) => {
+  Promise.resolve(updatePipelineHandler(req, res)).catch(next);
+});
+
+app.delete("/pipelines/:pipelineId", (req, res, next) => {
+  Promise.resolve(deletePipelineHandler(req, res)).catch(next);
+});
+
+app.get("/pipelines/:pipelineId/jobs", (req, res, next) => {
+  Promise.resolve(getPipelineJobsHandler(req, res)).catch(next);
 });
 
 app.post("/autolinks/:webhookId", (req, res, next) => {

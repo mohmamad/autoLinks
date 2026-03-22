@@ -1,0 +1,31 @@
+<div class="modal-backdrop fade show"></div>
+<div class="modal d-block fade show" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-danger">
+          <i class="bi bi-trash3 me-2"></i>Delete Pipeline
+        </h5>
+        <button type="button" class="btn-close" (click)="onCancel()"></button>
+      </div>
+      <div class="modal-body">
+        <p>
+          Are you sure you want to delete <strong>{{ pipeline.name }}</strong>? This will remove the
+          pipeline, its subscribers, and queued jobs.
+        </p>
+        @if (errorMessage) {
+          <div class="alert alert-danger">{{ errorMessage }}</div>
+        }
+      </div>
+      <div class="modal-footer justify-content-between">
+        <button class="btn btn-outline-secondary" (click)="onCancel()">Cancel</button>
+        <button class="btn btn-danger" (click)="onConfirmDelete()" [disabled]="loading">
+          @if (loading) {
+            <span class="spinner-border spinner-border-sm me-1"></span>
+          }
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

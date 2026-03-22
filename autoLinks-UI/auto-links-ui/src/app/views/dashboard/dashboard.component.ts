@@ -4,10 +4,20 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { PipelineService } from '../../common/pipeline/services/pipeline.backend.service';
 import { IPipeline } from '../../common/pipeline/interfaces';
+import { EditPipelineModalComponent } from '../pipeline/edit-pipeline-modal/edit-pipeline-modal.component';
+import { DeletePipelineModalComponent } from '../pipeline/delete-pipeline-modal/delete-pipeline-modal.component';
+import { PipelineJobsModalComponent } from '../pipeline/pipeline-jobs-modal/pipeline-jobs-modal.component';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterLink,
+    EditPipelineModalComponent,
+    DeletePipelineModalComponent,
+    PipelineJobsModalComponent,
+  ],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })
@@ -15,6 +25,9 @@ export class DashboardComponent implements OnInit {
   searchTerm = signal('');
   pipelines = signal<IPipeline[]>([]);
   loading = false;
+  editingPipeline = signal<IPipeline | null>(null);
+  deletingPipeline = signal<IPipeline | null>(null);
+  jobsPipeline = signal<IPipeline | null>(null);
 
   filteredPipelines = computed(() => {
     const term = this.searchTerm().trim().toLowerCase();
@@ -39,6 +52,40 @@ export class DashboardComponent implements OnInit {
 
   refresh(): void {
     this.searchTerm.set('');
+    this.loadPipelines();
+  }
+
+  openEditModal(pipeline: IPipeline): void {
+    this.editingPipeline.set(pipeline);
+  }
+
+  closeEditModal(): void {
+    this.editingPipeline.set(null);
+  }
+
+  openDeleteModal(pipeline: IPipeline): void {
+    this.deletingPipeline.set(pipeline);
+  }
+
+  closeDeleteModal(): void {
+    this.deletingPipeline.set(null);
+  }
+
+  openJobsModal(pipeline: IPipeline): void {
+    this.jobsPipeline.set(pipeline);
+  }
+
+  closeJobsModal(): void {
+    this.jobsPipeline.set(null);
+  }
+
+  handlePipelineUpdated(): void {
+    this.closeEditModal();
+    this.loadPipelines();
+  }
+
+  handlePipelineDeleted(): void {
+    this.closeDeleteModal();
     this.loadPipelines();
   }
 

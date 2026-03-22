@@ -19,6 +19,8 @@ import {
 import { autolinkHandler } from "./api/autolinks.js";
 import { executeJob } from "./worker/worker.js";
 
+export { runWorkerLoop };
+
 const app = express();
 const port = config.api.port;
 async function runWorkerLoop() {

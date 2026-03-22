@@ -10,6 +10,7 @@ jobs:
     env:
       DATABASE_URL: ${{ secrets.DATABASE_URL }}
       JWT_SECRET: ${{ secrets.JWT_SECRET }}
+      BREVO_API_KEY: ${{ secrets.BREVO_API_KEY }}
     runs-on: ubuntu-latest
 
     steps:

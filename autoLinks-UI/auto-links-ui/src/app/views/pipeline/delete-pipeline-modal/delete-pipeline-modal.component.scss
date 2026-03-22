@@ -1,0 +1,25 @@
+.modal-backdrop {
+  z-index: 1040;
+  background: rgba(15, 15, 19, 0.7);
+  backdrop-filter: blur(4px);
+}
+
+.modal {
+  z-index: 1050;
+}
+
+.modal-content {
+  background: var(--al-surface);
+  border: 1px solid var(--al-border);
+  border-radius: 16px;
+  color: var(--al-text);
+}
+
+.modal-header,
+.modal-footer {
+  border-color: var(--al-border);
+}
+
+.btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
+}

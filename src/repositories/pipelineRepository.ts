@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 
 import { db } from "../db/index.js";
 import { jobs, pipelines } from "../db/schema.js";
@@ -30,6 +30,7 @@ export class PipelineRepository {
   async getPipelinesByUserId(userId: string) {
     const records = await db
       .select({
+        id: pipelines.id,
         name: pipelines.name,
         description: pipelines.description,
         weghookId: pipelines.webhook_id,
@@ -37,6 +38,31 @@ export class PipelineRepository {
       .from(pipelines)
       .where(eq(pipelines.user_id, userId));
     return records;
+  }
+
+  async updatePipeline(
+    pipelineId: string,
+    userId: string,
+    input: { name: string; description: string },
+  ) {
+    const [record] = await db
+      .update(pipelines)
+      .set({
+        name: input.name,
+        description: input.description,
+        updated_at: new Date(),
+      })
+      .where(and(eq(pipelines.id, pipelineId), eq(pipelines.user_id, userId)))
+      .returning();
+    return record ?? null;
+  }
+
+  async deletePipeline(pipelineId: string, userId: string) {
+    const [record] = await db
+      .delete(pipelines)
+      .where(and(eq(pipelines.id, pipelineId), eq(pipelines.user_id, userId)))
+      .returning();
+    return record ?? null;
   }
 }
 

@@ -61,6 +61,22 @@ export class JobRepository {
       .set({ status, updated_at: new Date() })
       .where(eq(jobs.id, jobId));
   }
+
+  async getJobsByPipelineId(pipelineId: string) {
+    const records = await db
+      .select({
+        id: jobs.id,
+        status: jobs.status,
+        payload: jobs.payload,
+        pipelineName: pipelines.name,
+        createdAt: jobs.created_at,
+      })
+      .from(jobs)
+      .innerJoin(pipelines, eq(jobs.pipline_id, pipelines.id))
+      .where(eq(jobs.pipline_id, pipelineId))
+      .orderBy(desc(jobs.created_at));
+    return records;
+  }
 }
 
 export const jobRepository = new JobRepository();

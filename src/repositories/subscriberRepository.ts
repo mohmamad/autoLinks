@@ -16,6 +16,10 @@ export class SubscriberRepository {
       .where(eq(subscripers.pipeline_id, pipelineId));
     return records;
   }
+
+  async deleteByPipelineId(pipelineId: string) {
+    await db.delete(subscripers).where(eq(subscripers.pipeline_id, pipelineId));
+  }
 }
 
 export const subscriberRepository = new SubscriberRepository();

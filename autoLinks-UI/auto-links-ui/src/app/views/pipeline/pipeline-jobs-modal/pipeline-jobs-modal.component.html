@@ -1,0 +1,67 @@
+<div class="modal-backdrop fade show"></div>
+<div class="modal d-block fade show" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-layout-text-window me-2"></i>Jobs · {{ pipeline.name }}
+        </h5>
+        <div class="d-flex gap-2 align-items-center">
+          <button class="btn btn-sm btn-outline-secondary" (click)="refreshJobs()" [disabled]="loading">
+            @if (loading) {
+              <span class="spinner-border spinner-border-sm me-1"></span>
+            } @else {
+              <i class="bi bi-arrow-clockwise me-1"></i>
+            }
+            Refresh
+          </button>
+          <button type="button" class="btn-close" (click)="onClose()"></button>
+        </div>
+      </div>
+      <div class="modal-body">
+        @if (errorMessage) {
+          <div class="alert alert-danger">{{ errorMessage }}</div>
+        }
+        @if (!loading && jobs.length === 0 && !errorMessage) {
+          <div class="empty-state">
+            <i class="bi bi-inboxes"></i>
+            <p class="text-muted mb-0">No jobs found for this pipeline yet.</p>
+          </div>
+        }
+        @if (jobs.length > 0) {
+          <div class="table-responsive">
+            <table class="table mb-0">
+              <thead>
+                <tr>
+                  <th>Status</th>
+                  <th>Payload</th>
+                  <th>Created</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (job of jobs; track job.id) {
+                  <tr>
+                    <td>
+                      <span class="badge" [ngClass]="job.status">
+                        {{ job.status | uppercase }}
+                      </span>
+                    </td>
+                    <td>
+                      <pre class="payload">{{ formatPayload(job.payload) }}</pre>
+                    </td>
+                    <td class="text-muted small">
+                      {{ job.createdAt | date: 'medium' }}
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary" (click)="onClose()">Close</button>
+      </div>
+    </div>
+  </div>
+</div>

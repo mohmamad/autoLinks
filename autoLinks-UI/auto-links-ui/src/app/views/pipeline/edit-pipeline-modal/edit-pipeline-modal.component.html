@@ -1,0 +1,165 @@
+<div class="modal-backdrop fade show"></div>
+<div class="modal d-block fade show" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="bi bi-pencil-square me-2"></i>Edit Pipeline
+        </h5>
+        <button type="button" class="btn-close" (click)="onClose()"></button>
+      </div>
+      <div class="modal-body">
+        <form [formGroup]="form">
+          <div class="mb-3">
+            <label class="form-label">Name <span class="text-danger">*</span></label>
+            <input
+              type="text"
+              class="form-control"
+              formControlName="name"
+              placeholder="Pipeline name"
+              [class.is-invalid]="form.get('name')?.touched && form.get('name')?.invalid"
+            />
+            @if (form.get('name')?.touched && form.get('name')?.hasError('required')) {
+              <div class="invalid-feedback">Name is required.</div>
+            }
+          </div>
+
+          <div class="mb-4">
+            <label class="form-label">Description <span class="text-danger">*</span></label>
+            <textarea
+              class="form-control"
+              rows="2"
+              formControlName="description"
+              placeholder="Describe this pipeline"
+              [class.is-invalid]="form.get('description')?.touched && form.get('description')?.invalid"
+            ></textarea>
+            @if (form.get('description')?.touched && form.get('description')?.hasError('required')) {
+              <div class="invalid-feedback">Description is required.</div>
+            }
+          </div>
+
+          <h6 class="mb-3">Subscribers</h6>
+          <div formArrayName="subscribers">
+            @for (sub of subscribers.controls; track $index; let i = $index) {
+              <div class="subscriber-card mb-3" [formGroupName]="i">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                  <div class="subscriber-header">
+                    <span class="subscriber-number">{{ i + 1 }}</span>
+                    <strong>Subscriber</strong>
+                  </div>
+                  @if (subscribers.length > 1) {
+                    <button type="button" class="btn btn-sm btn-outline-danger" (click)="removeSubscriber(i)">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  }
+                </div>
+
+                <div class="mb-3">
+                  <label class="form-label">Type</label>
+                  <select class="form-select" formControlName="type">
+                    <option [value]="SubscriberType.HttpRequest">HTTP Request</option>
+                    <option [value]="SubscriberType.Email">Email</option>
+                    <option [value]="SubscriberType.Slack">Slack</option>
+                  </select>
+                </div>
+
+                <ng-container [formGroup]="getConfigGroup(i)">
+                  @switch (getSubscriberType(i)) {
+                    @case (SubscriberType.HttpRequest) {
+                      <div class="mb-3">
+                        <label class="form-label">URL <span class="text-danger">*</span></label>
+                        <input
+                          type="url"
+                          class="form-control"
+                          formControlName="url"
+                          placeholder="https://api.example.com/webhook"
+                          [class.is-invalid]="getConfigGroup(i).get('url')?.touched && getConfigGroup(i).get('url')?.invalid"
+                        />
+                        @if (getConfigGroup(i).get('url')?.touched && getConfigGroup(i).get('url')?.hasError('required')) {
+                          <div class="invalid-feedback">URL is required.</div>
+                        }
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label">Method</label>
+                        <select class="form-select" formControlName="method">
+                          <option value="GET">GET</option>
+                          <option value="POST">POST</option>
+                          <option value="PUT">PUT</option>
+                          <option value="DELETE">DELETE</option>
+                        </select>
+                      </div>
+                    }
+                    @case (SubscriberType.Email) {
+                      <div class="mb-3">
+                        <label class="form-label">To <span class="text-danger">*</span></label>
+                        <input
+                          type="email"
+                          class="form-control"
+                          formControlName="to"
+                          placeholder="recipient@example.com"
+                          [class.is-invalid]="getConfigGroup(i).get('to')?.touched && getConfigGroup(i).get('to')?.invalid"
+                        />
+                        @if (getConfigGroup(i).get('to')?.touched && getConfigGroup(i).get('to')?.hasError('required')) {
+                          <div class="invalid-feedback">Recipient email is required.</div>
+                        }
+                        @if (getConfigGroup(i).get('to')?.touched && getConfigGroup(i).get('to')?.hasError('email') && !getConfigGroup(i).get('to')?.hasError('required')) {
+                          <div class="invalid-feedback">Enter a valid email.</div>
+                        }
+                      </div>
+                      <div class="mb-3">
+                        <label class="form-label">Subject</label>
+                        <input type="text" class="form-control" formControlName="subject" placeholder="Email subject" />
+                      </div>
+                      <div class="row">
+                        <div class="col-md-6 mb-3">
+                          <label class="form-label">CC</label>
+                          <input type="text" class="form-control" formControlName="cc" placeholder="cc@example.com" />
+                        </div>
+                        <div class="col-md-6 mb-3">
+                          <label class="form-label">BCC</label>
+                          <input type="text" class="form-control" formControlName="bcc" placeholder="bcc@example.com" />
+                        </div>
+                      </div>
+                    }
+                    @case (SubscriberType.Slack) {
+                      <div class="mb-3">
+                        <label class="form-label">Webhook URL <span class="text-danger">*</span></label>
+                        <input
+                          type="url"
+                          class="form-control"
+                          formControlName="webhookUrl"
+                          placeholder="https://hooks.slack.com/services/..."
+                          [class.is-invalid]="getConfigGroup(i).get('webhookUrl')?.touched && getConfigGroup(i).get('webhookUrl')?.invalid"
+                        />
+                        @if (getConfigGroup(i).get('webhookUrl')?.touched && getConfigGroup(i).get('webhookUrl')?.hasError('required')) {
+                          <div class="invalid-feedback">Webhook URL is required.</div>
+                        }
+                      </div>
+                    }
+                  }
+                </ng-container>
+              </div>
+            }
+          </div>
+
+          <button type="button" class="btn btn-outline-secondary mb-3" (click)="addSubscriber()">
+            <i class="bi bi-plus-lg me-1"></i>Add Subscriber
+          </button>
+
+          @if (errorMessage) {
+            <div class="alert alert-danger">{{ errorMessage }}</div>
+          }
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline-secondary" (click)="onClose()">Cancel</button>
+        <button class="btn btn-primary" (click)="onSubmit()" [disabled]="loading">
+          @if (loading) {
+            <span class="spinner-border spinner-border-sm me-1"></span>
+          }
+          Save Changes
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

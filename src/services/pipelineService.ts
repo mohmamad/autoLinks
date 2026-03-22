@@ -1,13 +1,12 @@
 import { customAlphabet } from "nanoid";
 
-import { BadRequestError } from "../api/errors.js";
+import { BadRequestError, NotFoundError } from "../api/errors.js";
 import {
   pipelineRepository,
   subscriberRepository,
 } from "../repositories/index.js";
 import { assertUrlAllowed } from "./httpClient.js";
 import type { PiplineRequest } from "../types/pipline.types.js";
-import { pipeline } from "node:stream";
 
 const isValidString = (value: unknown): value is string =>
   typeof value === "string" && value.trim().length > 0;
@@ -53,7 +52,7 @@ export class PipelineService {
 
     return {
       pipeline,
-      webhookUrl: `https://autolinks-715561346779.us-central1.run.app/autolinks/${webhookId}`,
+      webhookUrl: this.buildWebhookUrl(webhookId),
     };
   }
 
@@ -63,14 +62,69 @@ export class PipelineService {
 
   async getPipelinesByUserId(userId: string) {
     const pipelines = await this.pipelines.getPipelinesByUserId(userId);
-    for (const pipeline of pipelines) {
-      pipeline.weghookId = `https://autolinks-715561346779.us-central1.run.app/autolinks/${pipeline.weghookId}`;
-    }
-    return pipelines;
+    return Promise.all(
+      pipelines.map((pipeline) =>
+        this.buildPipelineSummary({
+          id: pipeline.id,
+          name: pipeline.name,
+          description: pipeline.description,
+          webhookId: pipeline.weghookId,
+        }),
+      ),
+    );
   }
 
   async listSubscribers(pipelineId: string) {
     return await this.subscribers.getSubscriperByPipelineId(pipelineId);
+  }
+
+  async updatePipeline(
+    userId: string,
+    pipelineId: string,
+    request: PiplineRequest,
+  ) {
+    if (!isValidString(request.name) || !isValidString(request.description)) {
+      throw new BadRequestError("name and description are required");
+    }
+
+    if (
+      !Array.isArray(request.subscribers) ||
+      request.subscribers.length === 0
+    ) {
+      throw new BadRequestError("Subscribers are required");
+    }
+
+    const normalizedName = request.name.trim();
+    const normalizedDescription = request.description.trim();
+
+    const pipeline = await this.pipelines.updatePipeline(pipelineId, userId, {
+      name: normalizedName,
+      description: normalizedDescription,
+    });
+
+    if (!pipeline) {
+      throw new NotFoundError("Pipeline not found");
+    }
+
+    await this.subscribers.deleteByPipelineId(pipelineId);
+
+    for (const subscriber of request.subscribers) {
+      await this.createSubscriber(pipelineId, subscriber);
+    }
+
+    return this.buildPipelineSummary({
+      id: pipeline.id,
+      name: pipeline.name,
+      description: pipeline.description,
+      webhookId: pipeline.webhook_id,
+    });
+  }
+
+  async deletePipeline(userId: string, pipelineId: string) {
+    const deleted = await this.pipelines.deletePipeline(pipelineId, userId);
+    if (!deleted) {
+      throw new NotFoundError("Pipeline not found");
+    }
   }
 
   private async createSubscriber(
@@ -158,6 +212,32 @@ export class PipelineService {
     method: string,
   ): method is "GET" | "POST" | "PUT" | "DELETE" {
     return ["GET", "POST", "PUT", "DELETE"].includes(method as any);
+  }
+
+  private buildWebhookUrl(webhookId: string) {
+    return `https://autolinks-715561346779.us-central1.run.app/autolinks/${webhookId}`;
+  }
+
+  private async buildPipelineSummary(input: {
+    id: string;
+    name: string;
+    description: string;
+    webhookId: string;
+  }) {
+    const subscribers = await this.subscribers.getSubscriperByPipelineId(
+      input.id,
+    );
+
+    return {
+      id: input.id,
+      name: input.name,
+      description: input.description,
+      webhookUrl: this.buildWebhookUrl(input.webhookId),
+      subscribers: subscribers.map((subscriber) => ({
+        type: subscriber.type,
+        config: subscriber.config,
+      })),
+    };
   }
 }
 

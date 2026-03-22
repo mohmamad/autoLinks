@@ -17,14 +17,14 @@ export class DashboardComponent implements OnInit {
   loading = false;
 
   filteredPipelines = computed(() => {
-    const term = this.searchTerm().toLowerCase();
+    const term = this.searchTerm().trim().toLowerCase();
     const all = this.pipelines();
     if (!term) return all;
-    return all.filter(
-      (p) =>
-        p.name.toLowerCase().includes(term) ||
-        p.description.toLowerCase().includes(term),
-    );
+    return all.filter((p) => {
+      const name = p.name?.toLowerCase() ?? '';
+      const description = p.description?.toLowerCase() ?? '';
+      return name.includes(term) || description.includes(term);
+    });
   });
 
   constructor(private pipelineService: PipelineService) {}
@@ -42,27 +42,9 @@ export class DashboardComponent implements OnInit {
     this.loadPipelines();
   }
 
-  /**
-   * Returns the CSS class for the status badge based on the status.
-   * @param status - The status of the pipeline.
-   * @returns - The CSS class for the status badge.
-   */
-  statusBadgeClass(status: string): string {
-    switch (status) {
-      case 'active':
-        return 'bg-success';
-      case 'inactive':
-        return 'bg-secondary';
-      case 'error':
-        return 'bg-danger';
-      default:
-        return 'bg-info';
-    }
-  }
-
   private loadPipelines(): void {
     this.loading = true;
-    this.pipelineService.getAllPipelines().subscribe({
+    this.pipelineService.getUserPipelines().subscribe({
       next: (data) => {
         this.pipelines.set(data);
         this.loading = false;

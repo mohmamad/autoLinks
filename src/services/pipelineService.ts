@@ -64,7 +64,7 @@ export class PipelineService {
   async getPipelinesByUserId(userId: string) {
     const pipelines = await this.pipelines.getPipelinesByUserId(userId);
     for (const pipeline of pipelines) {
-      pipeline.weghookId = `https://autolinks-715561346779.us-central1.run.app/${pipeline.weghookId}`;
+      pipeline.weghookId = `https://autolinks-715561346779.us-central1.run.app/autolinks/${pipeline.weghookId}`;
     }
     return pipelines;
   }

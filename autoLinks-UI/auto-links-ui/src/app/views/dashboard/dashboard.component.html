@@ -32,30 +32,21 @@
         <table class="table mb-0">
           <thead>
             <tr>
-              <th>ID</th>
               <th>Name</th>
               <th>Description</th>
-              <th>Status</th>
               <th>Webhook URL</th>
             </tr>
           </thead>
           <tbody>
-            @for (p of filteredPipelines(); track p.id) {
+            @for (p of filteredPipelines(); track p.webhookUrl) {
               <tr>
-                <td class="text-muted small font-monospace">{{ p.id | slice:0:8 }}...</td>
                 <td class="fw-semibold">{{ p.name }}</td>
                 <td class="text-muted">{{ p.description }}</td>
-                <td>
-                  <span class="status-badge" [ngClass]="statusBadgeClass(p.status)">
-                    <span class="status-dot"></span>
-                    {{ p.status }}
-                  </span>
-                </td>
                 <td><code class="webhook-url">{{ p.webhookUrl }}</code></td>
               </tr>
             } @empty {
               <tr>
-                <td colspan="5" class="empty-state">
+                <td colspan="3" class="empty-state">
                   <div class="empty-icon">
                     <i class="bi bi-diagram-3"></i>
                   </div>

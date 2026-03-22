@@ -20,44 +20,6 @@
   overflow: hidden;
 }
 
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 0.3em 0.75em;
-  border-radius: 20px;
-  font-size: 0.78rem;
-  font-weight: 600;
-  text-transform: capitalize;
-
-  &.bg-success {
-    background: rgba(62, 207, 142, 0.12) !important;
-    color: var(--al-success);
-  }
-
-  &.bg-secondary {
-    background: rgba(136, 136, 160, 0.12) !important;
-    color: var(--al-text-muted);
-  }
-
-  &.bg-danger {
-    background: rgba(239, 95, 95, 0.12) !important;
-    color: var(--al-danger);
-  }
-
-  &.bg-info {
-    background: rgba(124, 106, 239, 0.12) !important;
-    color: var(--al-primary);
-  }
-}
-
-.status-dot {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: currentColor;
-}
-
 .webhook-url {
   font-size: 0.78rem;
   color: var(--al-primary);

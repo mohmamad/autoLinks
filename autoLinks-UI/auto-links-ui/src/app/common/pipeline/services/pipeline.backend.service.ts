@@ -1,11 +1,18 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, map } from 'rxjs';
 import { ApiService } from '../../services/api.service';
 import {
   IPipeline,
   ICreatePipelineRequest,
 } from '../interfaces';
+
+type RawPipeline = {
+  name: string;
+  description: string;
+  weghookId?: string;
+  webhookUrl?: string;
+};
 
 @Injectable({ providedIn: 'root' })
 export class PipelineService {
@@ -14,8 +21,16 @@ export class PipelineService {
     private api: ApiService,
   ) {}
 
-  getAllPipelines(): Observable<IPipeline[]> {
-    return this.api.get<IPipeline[]>('/pipelines');
+  getUserPipelines(): Observable<IPipeline[]> {
+    return this.api.get<RawPipeline[]>('/pipelines').pipe(
+      map((pipelines) =>
+        pipelines.map((pipeline) => ({
+          name: pipeline.name,
+          description: pipeline.description,
+          webhookUrl: pipeline.webhookUrl ?? pipeline.weghookId ?? '',
+        })),
+      ),
+    );
   }
 
   createDiagram(_message: string): Observable<string> {

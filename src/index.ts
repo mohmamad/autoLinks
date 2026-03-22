@@ -15,9 +15,6 @@ import { autolinkHandler } from "./api/autolinks.js";
 
 const app = express();
 const port = config.api.port;
-const WORKER_POLL_INTERVAL_MS = Number(
-  process.env.WORKER_POLL_INTERVAL_MS ?? 2000,
-);
 const WORKER_CONCURRENCY = Number(process.env.WORKER_CONCURRENCY ?? 1);
 const workerEntry = new URL("./worker/thread-entry.js", import.meta.url);
 
@@ -27,8 +24,15 @@ type WorkerSlot = {
 };
 
 const workerPool: WorkerSlot[] = [];
-let workerInterval: ReturnType<typeof setInterval> | null = null;
+let workerPoolInitialized = false;
 let shuttingDown = false;
+let dispatchInProgress = false;
+
+function markDispatchCompleteIfIdle() {
+  if (dispatchInProgress && workerPool.every((slot) => !slot.busy)) {
+    dispatchInProgress = false;
+  }
+}
 
 function createWorkerSlot(index: number): WorkerSlot {
   const worker = new Worker(workerEntry);
@@ -39,11 +43,13 @@ function createWorkerSlot(index: number): WorkerSlot {
     if (message?.type === "error") {
       console.error("Worker thread job failed", message.error);
     }
+    markDispatchCompleteIfIdle();
   });
 
   worker.on("error", (error) => {
     slot.busy = false;
     console.error("Worker thread crashed", error);
+    markDispatchCompleteIfIdle();
   });
 
   worker.on("exit", (code) => {
@@ -60,32 +66,49 @@ function createWorkerSlot(index: number): WorkerSlot {
   return slot;
 }
 
-function dispatchWork() {
+function ensureWorkerPool() {
+  if (workerPoolInitialized) {
+    return;
+  }
+  for (let i = 0; i < WORKER_CONCURRENCY; i += 1) {
+    workerPool[i] = createWorkerSlot(i);
+  }
+  workerPoolInitialized = true;
+}
+
+type DispatchResult = "started" | "already-running" | "no-workers";
+
+function triggerWorkerRun(): DispatchResult {
+  ensureWorkerPool();
+  if (dispatchInProgress) {
+    return "already-running";
+  }
+
+  let dispatched = false;
   for (const slot of workerPool) {
     if (!slot.busy) {
       slot.busy = true;
       slot.worker.postMessage({ type: "run" });
+      dispatched = true;
     }
   }
-}
 
-function startWorkerPool() {
-  for (let i = 0; i < WORKER_CONCURRENCY; i += 1) {
-    workerPool[i] = createWorkerSlot(i);
+  if (dispatched) {
+    dispatchInProgress = true;
+    return "started";
   }
-  dispatchWork();
-  workerInterval = setInterval(dispatchWork, WORKER_POLL_INTERVAL_MS);
+
+  return "no-workers";
 }
 
 async function stopWorkerPool() {
   shuttingDown = true;
-  if (workerInterval) {
-    clearInterval(workerInterval);
-    workerInterval = null;
-  }
   await Promise.all(
     workerPool.map((slot) => slot.worker.terminate().catch(() => undefined)),
   );
+  workerPool.length = 0;
+  workerPoolInitialized = false;
+  dispatchInProgress = false;
 }
 
 app.use(cors());
@@ -127,12 +150,26 @@ app.get("/pipelines", (req, res, next) => {
   Promise.resolve(getPipelinesHandler(req, res)).catch(next);
 });
 
+app.post("/workers/run", (_req, res) => {
+  const result = triggerWorkerRun();
+  if (result === "started") {
+    res.status(202).json({ status: "started" });
+    return;
+  }
+
+  if (result === "already-running") {
+    res.status(202).json({ status: "running" });
+    return;
+  }
+
+  res.status(200).json({ status: "idle" });
+});
+
 app.use(middlewareErrorLogger);
 app.use(middlewareErrorHandler);
 
 const server = app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
-  startWorkerPool();
 });
 
 server.on("close", () => {

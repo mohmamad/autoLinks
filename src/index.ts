@@ -16,7 +16,7 @@ import { autolinkHandler } from "./api/autolinks.js";
 const app = express();
 const port = config.api.port;
 const WORKER_CONCURRENCY = Number(process.env.WORKER_CONCURRENCY ?? 1);
-const workerEntry = new URL("./worker/thread-entry.js", import.meta.url);
+const workerEntry = new URL("./worker/threadEntry.js", import.meta.url);
 
 type WorkerSlot = {
   worker: Worker;

@@ -27,20 +27,15 @@ export async function sendSlackMessage(
   actionPlan: ActionPlan,
   subscriber: SlackSubscriper,
 ) {
-  const response = await fetch(subscriber.config.webhookUrl, {
+  await fetch(subscriber.config.webhookUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      text: JSON.stringify(actionPlan.result.body),
+      text: `${JSON.stringify(actionPlan.result.body, null, 2)}`,
     }),
   });
-  if (!response.ok) {
-    const text = await response.text();
-    console.error("Slack error:", text);
-    return false;
-  }
   return true;
 }
 

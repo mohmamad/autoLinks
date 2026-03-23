@@ -22,11 +22,11 @@
         "If separate branches lead to similar actions, ensure they have distinct node IDs (e.g., SendGoodReview versus SendBadReview) so the diagram shows two unique outputs instead of merging onto one." 
       ],
       "output_format": {
-        "result": [
+        "result": 
           {
             "body": ""
           }
-        ],
+        ,
         "diagram": "You generate Mermaid flowcharts.\\n\\nSTRICT RULES:\\n- Always use: graph TD\\n- Each connection must be on its own line\\n- NEVER chain connections like A --> B --> C\\n- Always handle ALL outcomes of a condition (Yes AND No)\\n- Conditions must use {} brackets\\n- Actions must use [] brackets\\n- Every condition node MUST have at least 2 outgoing edges\\n- Reuse node IDs consistently (no duplicates, no redefining)\\n- Keep node IDs short (A, B, C, D...)\\n- Output ONLY valid Mermaid code (no explanations)\\n\\nGRAPH PATTERNS YOU MUST FOLLOW:\\n\\n1. Linear:\\nA --> B\\n\\n2. Condition:\\nA --> B{Condition}\\nB -->|Yes| C\\nB -->|No| D\\n\\n3. Merge:\\nC --> E\\nD --> E\\n\\n4. Parallel:\\nB --> C\\nB --> D"
       }
     }

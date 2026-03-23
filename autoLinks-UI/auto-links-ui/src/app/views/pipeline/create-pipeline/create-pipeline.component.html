@@ -94,6 +94,16 @@
                         <div class="invalid-feedback">Method is required.</div>
                       }
                     </div>
+                    <div class="mb-2">
+                      <label class="form-label">Headers</label>
+                       <textarea
+                            id="headers"
+                            class="form-control"
+                            rows="2"
+                            formControlName="headers"
+                            placeholder="Add the headers"
+                        ></textarea>
+                    </div>
                   }
                   @case (SubscriberType.Email) {
                     <div class="mb-2">

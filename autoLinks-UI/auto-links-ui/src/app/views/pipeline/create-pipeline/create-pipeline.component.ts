@@ -1,12 +1,6 @@
 import { Component, OnInit, DestroyRef, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {
-  ReactiveFormsModule,
-  FormBuilder,
-  FormGroup,
-  FormArray,
-  Validators,
-} from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, FormArray, Validators } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DiagramPreviewModalComponent } from '../diagram-preview-modal/diagram-preview-modal.component';
@@ -68,8 +62,9 @@ export class CreatePipelineComponent implements OnInit {
       config: this.buildConfigGroup(SubscriberType.HttpRequest),
     });
 
-    sub.get('type')?.valueChanges
-      .pipe(takeUntilDestroyed(this.destroyRef))
+    sub
+      .get('type')
+      ?.valueChanges.pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe((type) => {
         if (type) {
           sub.setControl('config', this.buildConfigGroup(type as SubscriberType));
@@ -123,20 +118,17 @@ export class CreatePipelineComponent implements OnInit {
     this.errorMessage = '';
 
     const payload = this.getCleanFormValue();
-    this.pipelineService
-      .createPipeline(payload)
-      .subscribe({
-        next: (webhookUrl) => {
-          this.loading = false;
-          this.webhookUrl = webhookUrl;
-          this.showSuccessModal = true;
-        },
-        error: (err) => {
-          this.loading = false;
-          this.errorMessage =
-            err.error?.error || 'Failed to create pipeline.';
-        },
-      });
+    this.pipelineService.createPipeline(payload).subscribe({
+      next: (webhookUrl) => {
+        this.loading = false;
+        this.webhookUrl = webhookUrl;
+        this.showSuccessModal = true;
+      },
+      error: (err) => {
+        this.loading = false;
+        this.errorMessage = err.error?.error || 'Failed to create pipeline.';
+      },
+    });
   }
 
   goToDashboard(): void {
@@ -150,12 +142,14 @@ export class CreatePipelineComponent implements OnInit {
    */
   private getCleanFormValue(): ICreatePipelineRequest {
     const { name, description, subscribers } = this.pipelineForm.value;
-    const cleanSubscribers = subscribers.map((sub: { type: SubscriberType; config: Record<string, string> }) => ({
-      type: sub.type,
-      config: Object.fromEntries(
-        Object.entries(sub.config).filter(([, v]) => v !== '' && v !== null && v !== undefined),
-      ),
-    }));
+    const cleanSubscribers = subscribers.map(
+      (sub: { type: SubscriberType; config: Record<string, string> }) => ({
+        type: sub.type,
+        config: Object.fromEntries(
+          Object.entries(sub.config).filter(([, v]) => v !== '' && v !== null && v !== undefined),
+        ),
+      }),
+    );
     return { name, description, subscribers: cleanSubscribers };
   }
 
@@ -165,6 +159,7 @@ export class CreatePipelineComponent implements OnInit {
         return this.fb.group({
           url: ['', [Validators.required]],
           method: ['POST', [Validators.required]],
+          headers: [''],
         });
       case SubscriberType.Email:
         return this.fb.group({

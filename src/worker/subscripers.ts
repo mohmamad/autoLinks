@@ -33,7 +33,7 @@ export async function sendSlackMessage(
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      text: `New pipeline result:\n${JSON.stringify(actionPlan.result.body, null, 2)}`,
+      result: actionPlan.result.body,
     }),
   });
   return true;

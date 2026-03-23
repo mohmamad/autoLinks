@@ -4,23 +4,36 @@ import { sendEmailMessage } from "../services/emailService.js";
 export async function hitUrl(
   actionPlan: ActionPlan,
   subscriber: HttpSubscriper,
-) {
+): Promise<boolean> {
   const payload = extractPlanPayload(actionPlan);
+  const method = subscriber.config.method.toUpperCase();
+
   try {
     const response = await fetch(subscriber.config.url, {
-      method: subscriber.config.method,
-      headers: subscriber.config.headers ?? undefined,
-      body: JSON.stringify(payload),
+      method,
+      headers: {
+        ...(method !== "GET" ? { "Content-Type": "application/json" } : {}),
+        ...(subscriber.config.headers ?? {}),
+      },
+      ...(method !== "GET" && payload !== undefined
+        ? { body: JSON.stringify(payload) }
+        : {}),
     });
+
     if (!response.ok) {
+      const text = await response.text();
+      console.error("HTTP error:", {
+        status: response.status,
+        body: text,
+      });
       return false;
     }
+
+    return true;
   } catch (error) {
-    console.error("Agent error", error);
+    console.error("Request failed:", error);
     return false;
   }
-
-  return true;
 }
 
 export async function sendSlackMessage(

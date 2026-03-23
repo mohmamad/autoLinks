@@ -27,13 +27,15 @@ export async function sendSlackMessage(
   actionPlan: ActionPlan,
   subscriber: SlackSubscriper,
 ) {
+  const payload = extractPlanPayload(actionPlan);
+
   await fetch(subscriber.config.webhookUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      text: `${JSON.stringify(actionPlan.result.body, null, 2)}`,
+      text: `${JSON.stringify(payload, null, 2)}`,
     }),
   });
   return true;

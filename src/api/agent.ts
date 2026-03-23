@@ -24,7 +24,7 @@ export async function getDiagram(req: Request, res: Response): Promise<void> {
     const actionPlan: ActionPlan = JSON.parse(result);
     if (validateActionPlan(actionPlan)) {
       assertActionPlanSafe(actionPlan);
-      respondWithJSON(res, 200, actionPlan.diagram);
+      respondWithJSON(res, 200, actionPlan);
     } else {
       throw new Error("Failed to get response");
     }

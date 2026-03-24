@@ -4,9 +4,7 @@ import { executeJob } from "./worker.js";
 
 async function runJobsUntilIdle() {
   try {
-    while (await executeJob()) {
-      // Keep draining the queue until no runnable jobs remain.
-    }
+    while (await executeJob()) {}
     parentPort?.postMessage({ type: "done" });
   } catch (error) {
     const message =

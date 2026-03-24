@@ -1,7 +1,7 @@
 import { runWithSkills } from "../agent/skills.js";
 import { ActionPlan } from "../types/agent.types.js";
 import { validateActionPlan } from "../agent/validator.js";
-import { hitUrl, sendEmail, sendSlackMessage } from "./subscripers.js";
+import { getSubscriberHandler } from "../worker/subscripers.js";
 import { jobService } from "../services/jobService.js";
 import { pipelineService } from "../services/pipelineService.js";
 
@@ -25,17 +25,9 @@ export async function executeJob(): Promise<boolean> {
   let isSuccessful = true;
 
   for (const subscriper of subscripers) {
-    switch (subscriper.type) {
-      case "slack":
-        isSuccessful = await sendSlackMessage(actionPlan, subscriper);
-        break;
-      case "email":
-        isSuccessful = await sendEmail(actionPlan, subscriper);
-        break;
-      case "http request":
-        isSuccessful = await hitUrl(actionPlan, subscriper);
-        break;
-    }
+    const handler = getSubscriberHandler(subscriper.type);
+
+    const isSuccessful = await handler(actionPlan, subscriper);
 
     if (!isSuccessful) {
       break;

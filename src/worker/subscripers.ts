@@ -1,6 +1,27 @@
 import { ActionPlan } from "../types/agent.types.js";
 import { sendEmailMessage } from "../services/emailService.js";
 
+type SubscriberHandler = (
+  actionPlan: ActionPlan,
+  subscriber: any,
+) => Promise<boolean>;
+
+export function getSubscriberHandler(type: string): SubscriberHandler {
+  const handlers: Record<string, SubscriberHandler> = {
+    slack: sendSlackMessage,
+    email: sendEmail,
+    "http request": hitUrl,
+  };
+
+  const handler = handlers[type];
+
+  if (!handler) {
+    throw new Error(`Unsupported subscriber type: ${type}`);
+  }
+
+  return handler;
+}
+
 export async function hitUrl(
   actionPlan: ActionPlan,
   subscriber: HttpSubscriper,

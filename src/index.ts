@@ -21,6 +21,16 @@ import { executeJob } from "./worker/worker.js";
 
 export { runWorkerLoop };
 
+const originalError = console.error;
+console.error = (...args) => {
+  if (typeof args[0] === "string" && args[0].includes("some noisy message"))
+    return;
+
+  if (process.env.NODE_ENV === "development") {
+    originalError.apply(console, args);
+  }
+};
+
 const app = express();
 const port = config.api.port;
 async function runWorkerLoop() {
